@@ -392,7 +392,7 @@ export class RAGService {
           if (newMessage.sender === 'assistant' && newMessage.text !== '' && c.messages[c.messages.length - 1]?.sender === 'assistant') {
             const updatedMsgs = [...c.messages];
             updatedMsgs[updatedMsgs.length - 1] = {
-              ...updatedMsgs[updatedMsgs.length - 1],
+              ...c.messages[c.messages.length - 1],
               text: newMessage.text
             };
             return { ...c, messages: updatedMsgs };
@@ -403,6 +403,84 @@ export class RAGService {
         return c;
       });
     });
+  }
+
+  private extractBackendErrorMessage(err: any): string | null {
+    if (!err) {
+      return null;
+    }
+
+    if (err.status === 0) {
+      return 'Unable to connect to the backend server.';
+    }
+
+    const payload = err.error;
+    if (typeof payload === 'string') {
+      try {
+        const parsed = JSON.parse(payload);
+        return this.stringifyBackendError(parsed);
+      } catch {
+        return payload;
+      }
+    }
+
+    if (payload && typeof payload === 'object') {
+      return this.stringifyBackendError(payload);
+    }
+
+    return err.message || null;
+  }
+
+  private stringifyBackendError(payload: any): string {
+    if (!payload) {
+      return 'An unknown server error occurred.';
+    }
+
+    if (typeof payload === 'string') {
+      return payload;
+    }
+
+    if (Array.isArray(payload)) {
+      return payload.map(item => (typeof item === 'string' ? item : JSON.stringify(item))).join('\n');
+    }
+
+    const candidates = [
+      payload.message,
+      payload.error,
+      payload.detail,
+      payload.title,
+      payload.description,
+      payload?.exceptionMessage
+    ];
+
+    for (const candidate of candidates) {
+      if (candidate) {
+        if (typeof candidate === 'string') {
+          return candidate;
+        }
+        if (Array.isArray(candidate)) {
+          return candidate.join('\n');
+        }
+        if (typeof candidate === 'object') {
+          return JSON.stringify(candidate, null, 2);
+        }
+      }
+    }
+
+    if (payload.errors) {
+      if (Array.isArray(payload.errors)) {
+        return payload.errors.map((item: unknown) => (typeof item === 'string' ? item : JSON.stringify(item))).join('\n');
+      }
+      if (typeof payload.errors === 'object') {
+        return Object.entries(payload.errors)
+          .map(([key, value]) => `${key}: ${Array.isArray(value) ? value.join(', ') : value}`)
+          .join('\n');
+      }
+    }
+
+    return Object.entries(payload)
+      .map(([key, value]) => `${key}: ${typeof value === 'string' ? value : JSON.stringify(value)}`)
+      .join('\n');
   }
 
   // --- Beautiful typing animation for high fidelity Gemini UX ---
