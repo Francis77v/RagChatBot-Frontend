@@ -1,9 +1,9 @@
 .login-card {
   animation: cardEntrance 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   box-shadow: 
-    0 25px 50px -12px rgba(0, 0, 0, 0.5), 
-    inset 0 1px 0px 0px rgba(255, 255, 255, 0.05),
-    0 0 40px -10px rgba(59, 130, 246, 0.1);
+    0 25px 50px -12px rgba(0, 0, 0, 0.08), 
+    inset 0 1px 0px 0px rgba(255, 255, 255, 0.8),
+    0 0 40px -10px rgba(59, 130, 246, 0.08);
 }
 
 @keyframes cardEntrance {
@@ -43,7 +43,8 @@
 input:-webkit-autofill,
 input:-webkit-autofill:hover, 
 input:-webkit-autofill:focus {
-  -webkit-text-fill-color: #ffffff;
-  -webkit-box-shadow: 0 0 0px 1000px #16171e inset;
+  -webkit-text-fill-color: #1e293b;
+  -webkit-box-shadow: 0 0 0px 1000px #f8fafc inset;
   transition: background-color 5000s ease-in-out 0s;
 }
+

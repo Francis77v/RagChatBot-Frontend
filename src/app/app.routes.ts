@@ -6,6 +6,8 @@ import { authGuard } from './auth.guard';
 import { adminGuard } from './admin.guard';
 import { loginGuard } from './login.guard';
 
+import { UserManagementComponent } from './user-management.component';
+
 export const routes: Routes = [
   {
     path: 'login',
@@ -20,6 +22,11 @@ export const routes: Routes = [
   {
     path: 'documents',
     component: DocumentUploadComponent,
+    canActivate: [authGuard, adminGuard]
+  },
+  {
+    path: 'users',
+    component: UserManagementComponent,
     canActivate: [authGuard, adminGuard]
   },
   {

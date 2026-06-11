@@ -1,24 +1,17 @@
 :host {
   display: block;
   height: 100%;
+  width: 100%;
+  overflow: hidden;
 }
 
-.sidebar-container {
-  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.06);
-  
-  &.w-16 {
-    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.04);
-  }
-}
-
-/* Custom Minimalist Scrollbar */
 .custom-scrollbar {
   scrollbar-width: thin;
   scrollbar-color: rgba(0, 0, 0, 0.1) transparent;
 
   &::-webkit-scrollbar {
-    width: 4px;
-    height: 4px;
+    width: 6px;
+    height: 6px;
   }
 
   &::-webkit-scrollbar-track {
@@ -34,4 +27,3 @@
     }
   }
 }
-

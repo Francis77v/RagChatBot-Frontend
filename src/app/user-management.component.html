@@ -1,0 +1,273 @@
+<div class="h-full flex flex-col bg-[#f8fafc]">
+  <!-- --- Page Header --- -->
+  <header class="bg-white border-b border-slate-200/80 px-8 py-5 flex items-center justify-between shadow-xs">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-blue-500/20">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+        </svg>
+      </div>
+      <div>
+        <div class="flex items-center gap-2">
+          <h1 class="text-xl font-bold tracking-tight text-slate-800">User Management</h1>
+          <span class="text-[9px] font-bold tracking-wider px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-100 uppercase">
+            Admin Portal
+          </span>
+        </div>
+        <p class="text-xs text-slate-500 font-medium">Provision new accounts and manage system security roles.</p>
+      </div>
+    </div>
+
+    <a 
+      routerLink="/" 
+      class="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-slate-600 bg-slate-50 hover:bg-slate-100 hover:text-slate-800 border border-slate-200/60 shadow-xs cursor-pointer transition-all duration-200"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+      </svg>
+      <span>Back to Chat</span>
+    </a>
+  </header>
+
+  <!-- --- Scrollable Content --- -->
+  <main class="flex-grow overflow-y-auto custom-scrollbar p-8">
+    <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8">
+      
+      <!-- --- Register User Column --- -->
+      <section class="lg:col-span-7 flex flex-col gap-6">
+        
+        <!-- Registration Success/Error Alert -->
+        <div *ngIf="registerSuccess()" class="flex items-start gap-3 p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 shadow-xs animate-fade-in">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-emerald-600 flex-shrink-0 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+          </svg>
+          <div class="text-sm">
+            <span class="font-bold">Success!</span> {{ registerSuccess() }}
+          </div>
+        </div>
+
+        <div *ngIf="registerError()" class="flex items-start gap-3 p-4 rounded-xl bg-red-50 border border-red-200 text-red-800 shadow-xs animate-fade-in">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+          </svg>
+          <div class="text-sm">
+            <span class="font-bold">Error!</span> {{ registerError() }}
+          </div>
+        </div>
+
+        <!-- Registration Form Card -->
+        <div class="bg-white border border-slate-200/80 rounded-2xl shadow-xs p-6">
+          <h2 class="text-base font-bold text-slate-800 mb-1">Register New Account</h2>
+          <p class="text-xs text-slate-500 mb-6 font-medium">Create a user account and assign their security clearance.</p>
+
+          <form [formGroup]="registerForm" (ngSubmit)="onRegister()" class="flex flex-col gap-5">
+            <!-- Email -->
+            <div class="flex flex-col gap-1.5">
+              <label for="reg-email" class="text-xs font-bold text-slate-600">Email Address</label>
+              <div class="relative">
+                <input 
+                  id="reg-email"
+                  type="email" 
+                  formControlName="email"
+                  placeholder="name@example.com"
+                  class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none text-sm transition-all placeholder-slate-400 font-medium"
+                  [class.border-red-300]="isRegisterFieldInvalid('email')"
+                  [class.bg-red-50/10]="isRegisterFieldInvalid('email')"
+                />
+              </div>
+              <p *ngIf="isRegisterFieldInvalid('email')" class="text-xs text-red-500 font-semibold mt-1">
+                Please enter a valid email address.
+              </p>
+            </div>
+
+            <!-- Password -->
+            <div class="flex flex-col gap-1.5">
+              <label for="reg-password" class="text-xs font-bold text-slate-600">Password</label>
+              <input 
+                id="reg-password"
+                type="password" 
+                formControlName="password"
+                placeholder="••••••••"
+                class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none text-sm transition-all placeholder-slate-400 font-medium"
+                [class.border-red-300]="isRegisterFieldInvalid('password')"
+                [class.bg-red-50/10]="isRegisterFieldInvalid('password')"
+              />
+              <p *ngIf="isRegisterFieldInvalid('password')" class="text-xs text-red-500 font-semibold mt-1">
+                Password must be at least 6 characters.
+              </p>
+            </div>
+
+            <!-- Confirm Password -->
+            <div class="flex flex-col gap-1.5">
+              <label for="reg-confirm-password" class="text-xs font-bold text-slate-600">Confirm Password</label>
+              <input 
+                id="reg-confirm-password"
+                type="password" 
+                formControlName="confirmPassword"
+                placeholder="••••••••"
+                class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none text-sm transition-all placeholder-slate-400 font-medium"
+                [class.border-red-300]="isRegisterFieldInvalid('confirmPassword') || (registerForm.touched && registerForm.hasError('passwordMismatch'))"
+                [class.bg-red-50/10]="isRegisterFieldInvalid('confirmPassword') || (registerForm.touched && registerForm.hasError('passwordMismatch'))"
+              />
+              <p *ngIf="isRegisterFieldInvalid('confirmPassword') && !registerForm.hasError('passwordMismatch')" class="text-xs text-red-500 font-semibold mt-1">
+                Confirmation password is required.
+              </p>
+              <p *ngIf="registerForm.touched && registerForm.hasError('passwordMismatch')" class="text-xs text-red-500 font-semibold mt-1">
+                Passwords do not match.
+              </p>
+            </div>
+
+            <!-- Role Dropdown -->
+            <div class="flex flex-col gap-1.5">
+              <label for="reg-role" class="text-xs font-bold text-slate-600">Assigned Role</label>
+              <select 
+                id="reg-role"
+                formControlName="role"
+                class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none text-sm bg-white font-medium text-slate-700 transition-all cursor-pointer"
+                [class.border-red-300]="isRegisterFieldInvalid('role')"
+              >
+                <option value="" disabled selected>Select a role...</option>
+                @for (role of rolesList(); track role) {
+                  <option [value]="role">{{ role }}</option>
+                }
+              </select>
+              <p *ngIf="isRegisterFieldInvalid('role')" class="text-xs text-red-500 font-semibold mt-1">
+                Please assign a security role.
+              </p>
+            </div>
+
+            <!-- Submit Button -->
+            <button 
+              type="submit"
+              [disabled]="registerForm.invalid || isRegistering()"
+              class="w-full py-3 mt-2 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-md shadow-blue-500/10 hover:shadow-blue-500/20 active:scale-[0.99] disabled:opacity-50 disabled:pointer-events-none cursor-pointer transition-all duration-200 flex items-center justify-center gap-2"
+            >
+              @if (isRegistering()) {
+                <!-- Loading Spinner -->
+                <svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span>Creating Account...</span>
+              } @else {
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4.5 w-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                </svg>
+                <span>Register User</span>
+              }
+            </button>
+          </form>
+        </div>
+      </section>
+
+      <!-- --- Roles Management Column --- -->
+      <section class="lg:col-span-5 flex flex-col gap-8">
+        
+        <!-- Role Alert State -->
+        <div *ngIf="roleSuccess()" class="flex items-start gap-3 p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 shadow-xs animate-fade-in">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-emerald-600 flex-shrink-0 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+          </svg>
+          <div class="text-sm">
+            {{ roleSuccess() }}
+          </div>
+        </div>
+
+        <div *ngIf="roleError()" class="flex items-start gap-3 p-4 rounded-xl bg-red-50 border border-red-200 text-red-800 shadow-xs animate-fade-in">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+          </svg>
+          <div class="text-sm">
+            {{ roleError() }}
+          </div>
+        </div>
+
+        <!-- Add Role Card -->
+        <div class="bg-white border border-slate-200/80 rounded-2xl shadow-xs p-6">
+          <h2 class="text-base font-bold text-slate-800 mb-1">Create Security Role</h2>
+          <p class="text-xs text-slate-500 mb-5 font-medium">Add a new authorization group inside the system database.</p>
+
+          <form [formGroup]="roleForm" (ngSubmit)="onAddRole()" class="flex flex-col gap-4">
+            <div class="flex flex-col gap-1.5">
+              <label for="role-name" class="text-xs font-bold text-slate-600">Role Name</label>
+              <input 
+                id="role-name"
+                type="text" 
+                formControlName="roleName"
+                placeholder="e.g. Supervisor"
+                class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none text-sm transition-all placeholder-slate-400 font-medium"
+                [class.border-red-300]="isRoleFieldInvalid('roleName')"
+              />
+              <p *ngIf="isRoleFieldInvalid('roleName')" class="text-xs text-red-500 font-semibold mt-1">
+                Role name must be at least 2 characters.
+              </p>
+            </div>
+
+            <button 
+              type="submit"
+              [disabled]="roleForm.invalid || isAddingRole()"
+              class="w-full py-2.5 mt-1 rounded-xl text-sm font-semibold text-white bg-slate-800 hover:bg-slate-900 active:scale-[0.99] disabled:opacity-50 disabled:pointer-events-none cursor-pointer transition-all duration-200 flex items-center justify-center gap-2"
+            >
+              @if (isAddingRole()) {
+                <svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span>Creating Role...</span>
+              } @else {
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+                <span>Add Role</span>
+              }
+            </button>
+          </form>
+        </div>
+
+        <!-- Role List Card -->
+        <div class="bg-white border border-slate-200/80 rounded-2xl shadow-xs p-6">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h2 class="text-base font-bold text-slate-800">System Roles</h2>
+              <p class="text-[11px] text-slate-400 font-medium">Currently active security clearance roles.</p>
+            </div>
+            <button 
+              (click)="loadRoles()" 
+              [disabled]="isLoadingRoles()"
+              class="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-50 cursor-pointer disabled:opacity-50 transition-colors"
+              title="Refresh Roles"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" [class.animate-spin]="isLoadingRoles()" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 7.89l-4.486 4.486" />
+              </svg>
+            </button>
+          </div>
+
+          <!-- Roles badgelist -->
+          @if (isLoadingRoles() && rolesList().length === 0) {
+            <!-- Skeleton list -->
+            <div class="flex flex-wrap gap-2">
+              <div class="h-7 w-16 bg-slate-100 rounded-lg animate-pulse"></div>
+              <div class="h-7 w-20 bg-slate-100 rounded-lg animate-pulse"></div>
+              <div class="h-7 w-24 bg-slate-100 rounded-lg animate-pulse"></div>
+            </div>
+          } @else {
+            <div class="flex flex-wrap gap-2">
+              @for (role of rolesList(); track role) {
+                <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-50 border border-slate-200/60 text-slate-700 select-none shadow-xs hover:border-slate-300 transition-colors">
+                  <div class="w-1.5 h-1.5 rounded-full bg-blue-500"></div>
+                  <span>{{ role }}</span>
+                </div>
+              } @empty {
+                <div class="w-full text-center py-6 text-xs text-slate-400 italic font-medium">
+                  No roles found in database.
+                </div>
+              }
+            </div>
+          }
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>

@@ -1,26 +1,24 @@
-<div class="relative min-h-screen w-full flex items-center justify-center bg-[#07080d] overflow-hidden px-4 select-none">
-  <!-- Glowing Background Orbs -->
-  <div class="absolute top-1/4 left-1/4 w-[450px] h-[450px] rounded-full bg-blue-600/10 blur-[120px] pointer-events-none animate-pulse"></div>
-  <div class="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] rounded-full bg-purple-600/10 blur-[120px] pointer-events-none animate-pulse" style="animation-delay: 2s;"></div>
+<div class="relative min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50/40 to-indigo-50/30 overflow-hidden px-4 select-none">
+  <!-- Subtle Background Orbs -->
+  <div class="absolute top-1/4 left-1/4 w-[450px] h-[450px] rounded-full bg-blue-400/10 blur-[120px] pointer-events-none animate-pulse"></div>
+  <div class="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] rounded-full bg-indigo-400/10 blur-[120px] pointer-events-none animate-pulse" style="animation-delay: 2s;"></div>
 
   <!-- Main Login Card Container -->
-  <div class="login-card w-full max-w-md bg-[#111218]/45 border border-[#20222a]/70 backdrop-blur-xl rounded-3xl shadow-2xl shadow-black/60 p-8 sm:p-10 z-10">
+  <div class="login-card w-full max-w-md bg-white/80 border border-slate-200 backdrop-blur-xl rounded-3xl shadow-xl shadow-slate-200/60 p-8 sm:p-10 z-10">
     
     <!-- Brand Header -->
     <div class="flex flex-col items-center mb-8 text-center">
-      <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-[#3b82f6] to-[#8b5cf6] flex items-center justify-center text-white font-extrabold text-2xl shadow-xl shadow-blue-500/25 mb-4 animate-bounce-subtle">
-        CB
-      </div>
-      <h2 class="text-3xl font-extrabold tracking-tight text-white mb-2">
+      <img src="codebiz_logo.png" alt="CodeBiz Logo" class="w-14 h-14 object-contain shadow-xl shadow-blue-400/5 mb-4 animate-bounce-subtle">
+      <h2 class="text-3xl font-extrabold tracking-tight text-slate-800 mb-2">
         Welcome Back
       </h2>
-      <p class="text-sm text-gray-400">
-        Enter credentials to access <span class="text-blue-400 font-medium">CodeBiz RAG Chatbot</span>
+      <p class="text-sm text-slate-500">
+        Enter credentials to access <span class="text-blue-500 font-medium">CodeBiz RAG Chatbot</span>
       </p>
     </div>
 
     <!-- Error Alert Banner -->
-    <div *ngIf="errorMessage()" class="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm flex items-start gap-3 shadow-md animate-shake">
+    <div *ngIf="errorMessage()" class="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 text-red-600 text-sm flex items-start gap-3 shadow-sm animate-shake">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
       </svg>
@@ -34,11 +32,11 @@
       
       <!-- Email Field -->
       <div>
-        <label for="email" class="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">
+        <label for="email" class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">
           Email Address
         </label>
         <div class="relative">
-          <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-500">
+          <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
             </svg>
@@ -48,15 +46,15 @@
             type="email"
             formControlName="email"
             placeholder="name@company.com"
-            class="w-full pl-11 pr-4 py-3 bg-[#16171e]/70 border border-[#20222a] hover:border-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 rounded-2xl text-white placeholder-gray-600 outline-none transition-all duration-200"
-            [class.border-red-500]="isFieldInvalid('email')"
+            class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-300 hover:border-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/15 rounded-2xl text-slate-800 placeholder-slate-400 outline-none transition-all duration-200"
+            [class.border-red-400]="isFieldInvalid('email')"
             [class.focus:ring-red-500/10]="isFieldInvalid('email')"
             [class.focus:border-red-500]="isFieldInvalid('email')"
           />
         </div>
         
         <!-- Validation Error -->
-        <div *ngIf="isFieldInvalid('email')" class="mt-2 text-xs text-red-400 flex items-center gap-1.5 pl-1">
+        <div *ngIf="isFieldInvalid('email')" class="mt-2 text-xs text-red-500 flex items-center gap-1.5 pl-1">
           <span class="inline-block w-1 h-1 rounded-full bg-red-500"></span>
           Please enter a valid email address
         </div>
@@ -65,12 +63,12 @@
       <!-- Password Field -->
       <div>
         <div class="flex justify-between items-center mb-2">
-          <label for="password" class="block text-xs font-semibold uppercase tracking-wider text-gray-400">
+          <label for="password" class="block text-xs font-semibold uppercase tracking-wider text-slate-500">
             Password
           </label>
         </div>
         <div class="relative">
-          <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-500">
+          <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
             </svg>
@@ -80,8 +78,8 @@
             [type]="showPassword() ? 'text' : 'password'"
             formControlName="password"
             placeholder="••••••••"
-            class="w-full pl-11 pr-12 py-3 bg-[#16171e]/70 border border-[#20222a] hover:border-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 rounded-2xl text-white placeholder-gray-600 outline-none transition-all duration-200"
-            [class.border-red-500]="isFieldInvalid('password')"
+            class="w-full pl-11 pr-12 py-3 bg-slate-50 border border-slate-300 hover:border-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/15 rounded-2xl text-slate-800 placeholder-slate-400 outline-none transition-all duration-200"
+            [class.border-red-400]="isFieldInvalid('password')"
             [class.focus:ring-red-500/10]="isFieldInvalid('password')"
             [class.focus:border-red-500]="isFieldInvalid('password')"
           />
@@ -90,7 +88,7 @@
           <button
             type="button"
             (click)="togglePasswordVisibility()"
-            class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-gray-500 hover:text-white cursor-pointer transition-colors"
+            class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 cursor-pointer transition-colors"
           >
             <svg *ngIf="showPassword()" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />
@@ -103,7 +101,7 @@
         </div>
         
         <!-- Validation Error -->
-        <div *ngIf="isFieldInvalid('password')" class="mt-2 text-xs text-red-400 flex items-center gap-1.5 pl-1">
+        <div *ngIf="isFieldInvalid('password')" class="mt-2 text-xs text-red-500 flex items-center gap-1.5 pl-1">
           <span class="inline-block w-1 h-1 rounded-full bg-red-500"></span>
           Password must be at least 6 characters
         </div>
@@ -113,7 +111,7 @@
       <button
         type="submit"
         [disabled]="isLoading() || loginForm.invalid"
-        class="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 disabled:from-blue-600/40 disabled:to-indigo-600/40 text-white font-semibold text-sm shadow-lg shadow-blue-500/10 hover:shadow-blue-500/25 active:scale-[0.99] disabled:scale-100 disabled:pointer-events-none transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer"
+        class="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 disabled:from-blue-400/60 disabled:to-indigo-400/60 text-white font-semibold text-sm shadow-lg shadow-blue-400/20 hover:shadow-blue-400/30 active:scale-[0.99] disabled:scale-100 disabled:pointer-events-none transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer"
       >
         <span *ngIf="!isLoading()">Sign In</span>
         

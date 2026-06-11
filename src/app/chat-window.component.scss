@@ -6,7 +6,7 @@
 /* Custom Minimalist Scrollbar */
 .custom-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.08) transparent;
+  scrollbar-color: rgba(0, 0, 0, 0.1) transparent;
 
   &::-webkit-scrollbar {
     width: 6px;
@@ -18,11 +18,11 @@
   }
 
   &::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(0, 0, 0, 0.1);
     border-radius: 20px;
     
     &:hover {
-      background: rgba(255, 255, 255, 0.15);
+      background: rgba(0, 0, 0, 0.18);
     }
   }
 }
@@ -43,8 +43,10 @@
   }
 }
 
-/* prose-invert formatting details for safe HTML output */
+/* prose formatting for light theme */
 .prose {
+  color: #334155;
+
   p {
     margin-bottom: 0.75rem;
     &:last-child {
@@ -58,19 +60,22 @@
   }
 
   pre {
-    background-color: #14151f !important;
+    background-color: #f1f5f9 !important;
+    color: #0f172a;
     border-radius: 12px;
     padding: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(0, 0, 0, 0.06);
     margin: 8px 0;
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   }
 
   code {
-    background-color: rgba(255, 255, 255, 0.08);
+    background-color: rgba(0, 0, 0, 0.06);
     padding: 2px 6px;
     border-radius: 4px;
     font-size: 85%;
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    color: #1e40af;
   }
 }
+

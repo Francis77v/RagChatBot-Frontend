@@ -36,7 +36,6 @@ export class AuthService {
 
   public isAdmin = computed(() => {
     const role = this.userRole();
-    console.log('Checking isAdmin - role:', role);
     if (!role) {
       return false;
     }
@@ -123,7 +122,6 @@ export class AuthService {
           .join('')
       );
       const payload = JSON.parse(json);
-      console.log('Decoded JWT payload:', payload);
       return payload;
     } catch {
       return null;
@@ -133,7 +131,6 @@ export class AuthService {
   private getCurrentUserStorageKey(): string {
     const payload = this.decodeTokenPayload();
     if (!payload) {
-      console.log('No payload, using anonymous user');
       return 'rag_user_anonymous';
     }
 
@@ -147,7 +144,6 @@ export class AuthService {
       null;
 
     const key = userId ? `rag_user_${userId}` : 'rag_user_anonymous';
-    console.log('User storage key:', key, 'userId:', userId);
     return key;
   }
 

@@ -73,25 +73,25 @@ export class ChatWindowComponent {
     // 1. Triple-backtick Code Blocks: ```code```
     formatted = formatted.replace(
       /```([\s\S]*?)```/g,
-      '<pre class="bg-[#1e1f29] border border-white/5 p-3 rounded-xl my-2 text-xs font-mono overflow-x-auto text-blue-300">$1</pre>'
+      '<pre class="p-3 rounded-xl my-2 text-xs font-mono overflow-x-auto text-slate-800">$1</pre>'
     );
 
     // 2. Single-backtick Inline Code: `code`
     formatted = formatted.replace(
       /`([^`]+)`/g,
-      '<code class="bg-[#2a2c3a] px-1.5 py-0.5 rounded text-blue-300 font-mono text-[13px]">$1</code>'
+      '<code class="px-1.5 py-0.5 rounded font-mono text-[13px]">$1</code>'
     );
 
     // 3. Bold Text: **text**
     formatted = formatted.replace(
       /\*\*([^*]+)\*\*/g,
-      '<strong class="font-bold text-white">$1</strong>'
+      '<strong class="font-semibold text-slate-900">$1</strong>'
     );
 
     // 4. Bullet Points starting with * or -
     formatted = formatted.replace(
       /^\s*[-*]\s+(.+)$/gm,
-      '<li class="ml-4 list-disc text-gray-300 my-1">$1</li>'
+      '<li class="ml-4 list-disc text-slate-700 my-1">$1</li>'
     );
 
     // 5. Convert Double-Newlines to paragraph dividers
@@ -106,5 +106,24 @@ export class ChatWindowComponent {
   // --- Quick Prompt Suggestion click ---
   applySuggestedPrompt(prompt: string) {
     this.questionText = prompt;
+  }
+
+  // --- Confidence badge styling helpers ---
+  getConfidenceBadgeClasses(level: 'High' | 'Medium' | 'Low' | undefined): string {
+    switch (level) {
+      case 'High':   return 'bg-emerald-50 text-emerald-700 border-emerald-200 ring-emerald-300/40';
+      case 'Medium': return 'bg-amber-50  text-amber-700  border-amber-200  ring-amber-300/40';
+      case 'Low':    return 'bg-red-50    text-red-700    border-red-200    ring-red-300/40';
+      default:       return 'hidden';
+    }
+  }
+
+  getConfidenceIcon(level: 'High' | 'Medium' | 'Low' | undefined): string {
+    switch (level) {
+      case 'High':   return '✦';
+      case 'Medium': return '◈';
+      case 'Low':    return '⚠';
+      default:       return '';
+    }
   }
 }

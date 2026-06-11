@@ -3,10 +3,33 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, firstValueFrom } from 'rxjs';
 import { AuthService } from './auth.service';
 
+/** Matches the backend ChatMessage DTO exactly */
+export interface ChatMessage {
+  role: 'user' | 'assistant' | 'system';
+  text: string;
+}
+
+/** Matches the backend ChatRequestDto exactly */
+export interface ChatRequestDto {
+  chatHistory: ChatMessage[];
+}
+
+/** Matches the structured JSON the backend POST /api/chat/ask now returns */
+export interface AskResponse {
+  question: string;
+  answer: string;
+  confidenceScore: number;
+  confidenceLevel: 'High' | 'Medium' | 'Low';
+}
+
 export interface Message {
   sender: 'user' | 'assistant';
   text: string;
   timestamp: Date;
+  /** Numerical confidence returned by the RAG backend (0.0 – 1.0) */
+  confidenceScore?: number;
+  /** Human-readable confidence tier returned by the RAG backend */
+  confidenceLevel?: 'High' | 'Medium' | 'Low';
 }
 
 export interface Conversation {
@@ -84,7 +107,6 @@ export class RAGService {
       // LOAD EFFECT MUST RUN FIRST when userStorageKey changes, before saving effects
       effect(() => {
         const userKey = this.authService.userStorageKey();
-        console.log('User changed, loading data for:', userKey);
         
         // Clear all state first
         this.conversations.set([]);
@@ -104,7 +126,6 @@ export class RAGService {
         try {
           const prefix = `${this.authService.userStorageKey()}_`;
           const key = `${prefix}rag_conversations`;
-          console.log('Saving conversations to:', key);
           localStorage.setItem(key, JSON.stringify(this.conversations()));
         } catch (e) {
           console.error('Error saving conversations to localStorage', e);
@@ -318,13 +339,13 @@ export class RAGService {
       convId = this.createNewConversation(questionText.length > 25 ? questionText.substring(0, 25) + '...' : questionText);
     }
 
-    // 1. Immediately append user message
+    // 1. Immediately append user message to local conversation
     const userMsg: Message = {
       sender: 'user',
       text: questionText,
       timestamp: new Date()
     };
-    
+
     this.updateMessagesInConversation(convId, userMsg);
 
     // Auto-rename conversation if it was brand new
@@ -333,40 +354,50 @@ export class RAGService {
       conversation.title = questionText.length > 30 ? questionText.substring(0, 30) + '...' : questionText;
     }
 
+    // 2. Build the full chat history (including the just-appended user message)
+    //    mapping our internal Message shape to the backend ChatMessage DTO shape.
+    const currentMessages = this.conversations().find(c => c.id === convId)?.messages ?? [];
+    const chatHistory: ChatMessage[] = currentMessages.map(m => ({
+      role: m.sender === 'user' ? 'user' : 'assistant',
+      text: m.text
+    }));
+
     this.isAILoading.set(true);
 
-    // Create placeholder AI message
+    // 3. Create placeholder AI message while waiting for the response
     const aiMsgPlaceholder: Message = {
       sender: 'assistant',
       text: '',
       timestamp: new Date()
     };
-    
+
     this.updateMessagesInConversation(convId, aiMsgPlaceholder);
 
-    const questionEncoded = encodeURIComponent(questionText);
-    const askUrl = `${this.baseUrl}/api/chat/ask?question=${questionEncoded}`;
-    console.log('askUrl:', askUrl, 'origin:', window.location.origin);
+    // 4. POST full chat history to the backend
+    const askUrl = `${this.baseUrl}/api/chat/ask`;
+    const requestBody: ChatRequestDto = { chatHistory };
 
     try {
-      // Try to read direct response
-      // For standard Angular REST GET:
       const response = await firstValueFrom(
-        this.http.get(askUrl, { responseType: 'text' })
+        this.http.post(askUrl, requestBody, { responseType: 'text' })
       );
-      
+
       this.isAILoading.set(false);
 
-      // Parse JSON if backend returned a JSON object instead of raw text
+      // Parse the structured AskResponse from the backend
       let cleanedResponse = response;
+      let confidenceScore: number | undefined;
+      let confidenceLevel: 'High' | 'Medium' | 'Low' | undefined;
       try {
-        const json = JSON.parse(response);
-        cleanedResponse = json.response || json.answer || json.reply || json.text || response;
+        const json: AskResponse = JSON.parse(response);
+        cleanedResponse = json.answer ?? response;
+        confidenceScore = json.confidenceScore;
+        confidenceLevel = json.confidenceLevel;
       } catch (e) {
-        // Response is raw text, leave as is
+        // Response is raw text, use as-is
       }
 
-      await this.animateResponseText(convId, cleanedResponse);
+      await this.animateResponseText(convId, cleanedResponse, confidenceScore, confidenceLevel);
     } catch (err: any) {
       console.error('Ask Chatbot failed:', err);
       this.isAILoading.set(false);
@@ -378,7 +409,7 @@ export class RAGService {
       } else {
         errorResponse += `**Details**: Server returned status \`${err.status}\` (${err.statusText || 'Error'}).\n\`\`\`json\n${JSON.stringify(err.error || err.message, null, 2)}\n\`\`\``;
       }
-      
+
       await this.animateResponseText(convId, errorResponse);
     }
   }
@@ -391,9 +422,12 @@ export class RAGService {
           // If it's a typing update for the last AI response
           if (newMessage.sender === 'assistant' && newMessage.text !== '' && c.messages[c.messages.length - 1]?.sender === 'assistant') {
             const updatedMsgs = [...c.messages];
+            // Spread old message first for base fields (e.g. timestamp origin),
+            // then spread newMessage on top so ALL incoming properties — including
+            // confidenceScore and confidenceLevel — are preserved on every tick.
             updatedMsgs[updatedMsgs.length - 1] = {
               ...c.messages[c.messages.length - 1],
-              text: newMessage.text
+              ...newMessage
             };
             return { ...c, messages: updatedMsgs };
           }
@@ -484,12 +518,17 @@ export class RAGService {
   }
 
   // --- Beautiful typing animation for high fidelity Gemini UX ---
-  private animateResponseText(convId: string, text: string): Promise<void> {
+  private animateResponseText(
+    convId: string,
+    text: string,
+    confidenceScore?: number,
+    confidenceLevel?: 'High' | 'Medium' | 'Low'
+  ): Promise<void> {
     return new Promise((resolve) => {
       let currentIdx = 0;
       let animatedText = '';
       const totalLen = text.length;
-      
+
       // Speed changes depending on response size to keep it fast
       const intervalMs = totalLen > 200 ? 5 : totalLen > 100 ? 10 : 20;
 
@@ -499,11 +538,13 @@ export class RAGService {
           const chunkSize = totalLen > 300 ? 3 : 1;
           animatedText += text.substring(currentIdx, currentIdx + chunkSize);
           currentIdx += chunkSize;
-          
+
           this.updateMessagesInConversation(convId, {
             sender: 'assistant',
             text: animatedText,
-            timestamp: new Date()
+            timestamp: new Date(),
+            confidenceScore,
+            confidenceLevel
           });
         } else {
           clearInterval(timer);

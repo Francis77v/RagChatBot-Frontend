@@ -1,5 +1,6 @@
-import { Component, ElementRef, ViewChild, signal } from '@angular/core';
+import { Component, ElementRef, ViewChild, signal, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
 import { RAGService } from './rag.service';
 
 @Component({
@@ -9,13 +10,40 @@ import { RAGService } from './rag.service';
   templateUrl: './document-upload.component.html',
   styleUrl: './document-upload.component.scss'
 })
-export class DocumentUploadComponent {
+export class DocumentUploadComponent implements OnInit {
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
 
+  private http = inject(HttpClient);
   isDragging = signal<boolean>(false);
-  availableRoles = signal<string[]>(['Admin', 'User', 'Manager', 'Employee']);
+  availableRoles = signal<string[]>([]);
 
   constructor(public ragService: RAGService) {}
+
+  ngOnInit() {
+    this.loadRoles();
+  }
+
+  loadRoles() {
+    this.http.get<any[]>('/api/auth/roles').subscribe({
+      next: (data) => {
+        if (Array.isArray(data)) {
+          const mapped = data.map(item => {
+            if (typeof item === 'string') {
+              return item;
+            }
+            if (item && typeof item === 'object') {
+              return item.name || item.Name || '';
+            }
+            return '';
+          }).filter(name => !!name);
+          this.availableRoles.set(mapped);
+        }
+      },
+      error: (err) => {
+        console.error('Failed to load roles in DocumentUploadComponent:', err);
+      }
+    });
+  }
 
   triggerFilePicker() {
     this.fileInput.nativeElement.click();
